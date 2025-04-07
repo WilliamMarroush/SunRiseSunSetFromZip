@@ -1,76 +1,146 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 const zipInfoURL = "https://ctp-zip-code-api.onrender.com/zip/";
 const riseSetInfoURL = "https://api.sunrise-sunset.org/json?";
 
-
-
-
 function App() {
-  const [count, setCount] = useState(0)
-  const [longLat, setLongLat] = useState({long: "0", lat: "0"});
-  const [zip, setZip] = useState("00000");
-  const [date,setDate] = useState("2023-01-01");
+  const [inputMode, setInputMode] = useState("zip"); // "zip" or "coords"
+  const [zip, setZip] = useState("");
+  const [longLat, setLongLat] = useState({ long: "", lat: "" });
+  const [date, setDate] = useState("today");
   const [riseSetData, setRiseSetData] = useState(null);
+  const [error, setError] = useState("");
 
-  function getLongLatData(zip){
-    const response = fetch(zipInfoURL + zip);
-    const data = response.json()[0];
-    setLongLat({long: data.Long, lat: data.Lat});
-  }
+  const handleInputModeChange = (mode) => {
+    setInputMode(mode);
+    setRiseSetData(null);
+    setError("");
+  };
 
-  function getRiseSetData(long, lat, date){
-    if (date == null){
-      date = "today";}
-    const respone = fetch(riseSetInfoURL + "lat="+lat+"&lng="+long+"&date="+date);
-    const data = response.json();
-    setRiseSetData([data.sunrise, data.sunset]);
-  }
+  const fetchLongLatFromZip = async () => {
+    try {
+      const response = await fetch(zipInfoURL + zip);
+      const data = await response.json();
+      if (data.length > 0) {
+        const { Lat, Long } = data[0];
+        setLongLat({ lat: Lat, long: Long });
+        return { lat: Lat, long: Long };
+      } else {
+        throw new Error("Invalid zip code");
+      }
+    } catch (err) {
+      setError("Failed to fetch long/lat from zip");
+      return null;
+    }
+  };
 
-  function displayRiseSetData(){
-    return(
-      <>
-        <h3>Sunrise: </h3>
-        <h3>Sunset: </h3>
-      </>
-    );
-  }
+  const fetchRiseSetData = async (lat, long) => {
+    try {
+      const response = await fetch(`${riseSetInfoURL}lat=${lat}&lng=${long}&date=${date}`);
+      const data = await response.json();
+      if (data.status === "OK") {
+        setRiseSetData({
+          sunrise: data.results.sunrise,
+          sunset: data.results.sunset
+        });
+      } else {
+        setError("Failed to get sunrise/sunset data.");
+      }
+    } catch (err) {
+      setError("Error fetching sunrise/sunset info");
+    }
+  };
+
+  const handleSubmit = async () => {
+    setError("");
+    let coords = { lat: longLat.lat, long: longLat.long };
+
+    if (inputMode === "zip") {
+      const fromZip = await fetchLongLatFromZip();
+      if (!fromZip) return;
+      coords = fromZip;
+    }
+
+    if (coords.lat && coords.long) {
+      await fetchRiseSetData(coords.lat, coords.long);
+    } else {
+      setError("Latitude and Longitude are required");
+    }
+  };
 
   return (
-    <>
-      <div className = "title-box">
-        <h1>sunset and sunrise times based off zip (or location vals)</h1>
-      </div>
-      <div className = "Input Options">
-        <div className = "longLatOptions">
+    <div className="app">
+      <h1>Sunrise & Sunset Times</h1>
+
+      <div className="input-section">
+        <label>
           <input
-            type='radio'
-            name='longandlat'
-          /><p>Longitude and Latitude</p>
-          <input
-          type = 'text'
-          name = 'long'
+            type="radio"
+            name="inputMode"
+            checked={inputMode === "coords"}
+            onChange={() => handleInputModeChange("coords")}
           />
+          Use Latitude and Longitude
+        </label>
+        {inputMode === "coords" && (
+          <div className="coords-inputs">
+            <input
+              type="text"
+              placeholder="Latitude"
+              value={longLat.lat}
+              onChange={(e) => setLongLat({ ...longLat, lat: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Longitude"
+              value={longLat.long}
+              onChange={(e) => setLongLat({ ...longLat, long: e.target.value })}
+            />
+          </div>
+        )}
+
+        <label>
           <input
-          type = 'text'
-          name = 'lat'
+            type="radio"
+            name="inputMode"
+            checked={inputMode === "zip"}
+            onChange={() => handleInputModeChange("zip")}
+          />
+          Use Zip Code
+        </label>
+        {inputMode === "zip" && (
+          <div className="zip-input">
+            <input
+              type="text"
+              placeholder="Zip Code"
+              value={zip}
+              onChange={(e) => setZip(e.target.value)}
+            />
+          </div>
+        )}
+
+        <div className="date-input">
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
           />
         </div>
-        <div className = "zipOptions">
-          <input
-          type = 'radio'
-          name = 'ziponly'
-          /><p>Zip Code Alone</p>
-          <input
-          type = 'text'
-          name = 'zip'
-          />
-        </div>
+
+        <button onClick={handleSubmit}>Get Sunrise & Sunset</button>
       </div>
-    </>
-  )
+
+      {error && <p className="error">{error}</p>}
+
+      {riseSetData && (
+        <div className="results">
+          <h3>Sunrise: {riseSetData.sunrise}</h3>
+          <h3>Sunset: {riseSetData.sunset}</h3>
+        </div>
+      )}
+    </div>
+  );
 }
-export default App
+
+export default App;
