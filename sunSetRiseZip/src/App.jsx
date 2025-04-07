@@ -11,6 +11,7 @@ function App() {
   const [date, setDate] = useState("today");
   const [riseSetData, setRiseSetData] = useState(null);
   const [error, setError] = useState("");
+  const [location, setLocation] = useState("");
 
   const handleInputModeChange = (mode) => {
     setInputMode(mode);
@@ -25,6 +26,7 @@ function App() {
       if (data.length > 0) {
         const { Lat, Long } = data[0];
         setLongLat({ lat: Lat, long: Long });
+        setLocation(data[0].City);
         return { lat: Lat, long: Long };
       } else {
         throw new Error("Invalid zip code");
@@ -135,10 +137,12 @@ function App() {
 
       {riseSetData && (
         <div className="results">
+          <h2>Location: {location}</h2>
           <h3>Sunrise: {riseSetData.sunrise}</h3>
           <h3>Sunset: {riseSetData.sunset}</h3>
         </div>
       )}
+      <p>Caution: Return is formatted in UTC (Coordinated Universal Time). Not your current timezone.</p>
     </div>
   );
 }
