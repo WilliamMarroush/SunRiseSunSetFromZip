@@ -1,42 +1,142 @@
+/* Font and Base Layout */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to bottom right, #fdf6ec, #f2e9e4);
+  margin: 0;
+  padding: 0;
+  color: #2c3e50;
+}
+
+/* App Container */
 #root {
-  max-width: 1280px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3rem 1rem 5rem;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Headings */
+h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #5e548e;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #9f86c0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #4a4e69;
 }
 
+/* Card Styling */
 .card {
-  padding: 2em;
+  background-color: #fff;
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+  transition: all 0.3s ease;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+.card:hover {
+  background-color: #fff7f0; /* Soft light-blue tint */
+  box-shadow: 0 0 15px rgba(237, 162, 100, 0.3); /* Cornflower blue glow */
+  transition: all 0.3s ease;
 }
 
-.read-the-docs {
-  color: #888;
+/* Form Inputs */
+input[type="text"],
+input[type="date"] {
+  border-radius: 0.75rem;
+  border: 1px solid #ddd;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus {
+  border-color: #f28482;
+  outline: none;
+  box-shadow: 0 0 5px rgba(242, 132, 130, 0.3);
+}
+
+/* Radio Buttons */
+.form-check-input {
+  cursor: pointer;
+}
+
+.form-check-label {
+  margin-left: 0.5rem;
+  font-weight: 600;
+  color: #4a4e69;
+}
+
+/* Submit Button */
+button.btn-primary {
+  background-color: #f28482;
+  border: none;
+  padding: 0.6rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #fff;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+button.btn-primary:hover {
+  background-color: #e06c75;
+  box-shadow: 0 4px 10px rgba(224, 108, 117, 0.3);
+}
+
+/* Error Alert */
+.alert-danger {
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Pinned Caution Window */
+p.position-fixed {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff9f0;
+  padding: 0.75rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid #e0c097;
+  font-size: 0.9rem;
+  color: #8d6e63;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  max-width: 80%;
+  text-align: center;
+  z-index: 999;
+}
+
+/* Responsive Layout Tweaks */
+@media (max-width: 576px) {
+  .row .col {
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
 }

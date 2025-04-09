@@ -26,7 +26,7 @@ function App() {
       if (data.length > 0) {
         const { Lat, Long } = data[0];
         setLongLat({ lat: Lat, long: Long });
-        setLocation(data[0].City);
+        setLocation(data[0].City +"   "+ data[0].State +"   "+ data[0].Country);
         return { lat: Lat, long: Long };
       } else {
         throw new Error("Invalid zip code");
