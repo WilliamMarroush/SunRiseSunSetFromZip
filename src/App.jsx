@@ -12,6 +12,7 @@ function App() {
   const [riseSetData, setRiseSetData] = useState(null);
   const [error, setError] = useState("");
   const [location, setLocation] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleInputModeChange = (mode) => {
     setInputMode(mode);
@@ -56,18 +57,24 @@ function App() {
 
   const handleSubmit = async () => {
     setError("");
-    let coords = { lat: longLat.lat, long: longLat.long };
+    setLoading(true);
+    try{
+      let coords = { lat: longLat.lat, long: longLat.long };
 
-    if (inputMode === "zip") {
-      const fromZip = await fetchLongLatFromZip();
-      if (!fromZip) return;
-      coords = fromZip;
+      if (inputMode === "zip") {
+        const fromZip = await fetchLongLatFromZip();
+        if (!fromZip) return;
+        coords = fromZip;
+      }
+  
+      if (coords.lat && coords.long) {
+        await fetchRiseSetData(coords.lat, coords.long);
+      } else {
+        setError("Latitude and Longitude are required");
+      }
     }
-
-    if (coords.lat && coords.long) {
-      await fetchRiseSetData(coords.lat, coords.long);
-    } else {
-      setError("Latitude and Longitude are required");
+    finally{
+      setLoading(false);
     }
   };
 
@@ -174,7 +181,12 @@ function App() {
           {error}
         </div>
       )}
-
+      {loading && (
+        <div className="text-center my-4">
+          <div className="spinner-border text-primary" role="status">
+          </div>
+        </div>
+      )}
       {riseSetData && (
         <div className="card p-4 text-center">
           <h2 className="mb-3">Location: {location}</h2>
